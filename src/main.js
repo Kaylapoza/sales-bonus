@@ -6,7 +6,9 @@
  */
 function calculateSimpleRevenue(purchase, _product) {
    // @TODO: Расчет выручки от операции
-   const {discount, sale_price, quantity} = purchase;
+    const { discount, sale_price, quantity } = purchase;
+    const discountMultiplier = 1 - (purchase.discount / 100);
+    return sale_price * quantity * discountMultiplier;
 }
 
 /**
@@ -29,10 +31,23 @@ function calculateBonusByProfit(index, total, seller) {
  */
 function analyzeSalesData(data, options) {
     // @TODO: Проверка входных данных
-
-    const { calculateRevenue, calculateBonus } = options;
+    if (!data || !Array.isArray(data.sellers, data.products, data.purchase_records) || 
+data.sellers.length === 0, data.products.length === 0, data.purchase_records.length === 0) {
+    throw new Error('Некорректные входные данные');
+}
 
     // @TODO: Проверка наличия опций
+    if (typeof options !== 'object') {
+        throw new Error('Параметр options должен быть объектом');
+    }
+    const { calculateRevenue, calculateBonus } = options;
+
+    if (typeof calculateRevenue !== 'function') {
+        throw new Error('options.calculateRevenue должна быть функцией');
+    }
+    if (typeof calculateBonus !== 'function') {
+        throw new Error('options.calculateBonus должна быть функцией');
+    }
 
     // @TODO: Подготовка промежуточных данных для сбора статистики
 
@@ -65,3 +80,38 @@ const sellerIndex = Object.fromEntries(sellerStats.map(seller => [seller.id, sel
 
 // преобразовали продукты в обьекты с индексами
 const productIndex = Object.fromEntries(data.products.map(product => [product.sku, product]));
+
+data.purchase_records.forEach(record => {
+    const seller = sellerIndex[record.seller_id];
+    if (seller) {
+        seller.sales_count += 1; // счетчик количесва продаж
+    }
+
+    if (seller) {
+        seller.revenue += record.total_amount; // счетчик общей прибыли продавцов
+    }
+
+    record.items.forEach(item => {
+        const product = productIndex[item.sku];
+
+        const cost = product.purchase_price * item.quantity; // считаем себестоимость проданных товаров
+
+        const revenue = calculateSimpleRevenue(item);
+
+        const profit = revenue - cost; // расчет чистой прибыли
+
+
+    })
+
+    seller.profit += profit;
+})
+
+
+
+
+
+
+
+
+
+
