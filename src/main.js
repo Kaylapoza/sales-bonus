@@ -100,10 +100,16 @@ data.purchase_records.forEach(record => {
 
         const profit = revenue - cost; // расчет чистой прибыли
 
+        seller.profit += profit; //увеличить прибыль у продавцов
 
+        if (!seller.products_sold[item.sku]) {
+            seller.products_sold[item.sku] = 0;
+        }
+
+        seller.products_sold[item.sku] += 1;
     })
 
-    seller.profit += profit;
+    
 })
 
 
