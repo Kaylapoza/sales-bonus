@@ -21,6 +21,18 @@ function calculateSimpleRevenue(purchase, _product) {
 function calculateBonusByProfit(index, total, seller) {
     // @TODO: Расчет бонуса от позиции в рейтинге
     const {profit} = seller;
+    total = Array.length;
+    if (index === 0) {
+        return profit * 0.15;
+    }
+    if (index === 1 || index === 2) {
+        return profit * 0.1;
+    }
+    if (index === total - 1) {
+        return 0;
+    } else {
+        return profit * 0.05;
+    }
 }
 
 /**
@@ -50,38 +62,25 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
     }
 
     // @TODO: Подготовка промежуточных данных для сбора статистики
+        const sellerStats = data.sellers.map(seller => ({
+    
+            id: seller.id,
+            name: `${seller.first_name} ${seller.last_name}`,
+            revenue: 0,
+            profit: 0,
+            sales_count: 0,
+        products_sold: {}
+    }));
 
     // @TODO: Индексация продавцов и товаров для быстрого доступа
+    // преобразовали продавцов в обьекты с индексами
+    const sellerIndex = Object.fromEntries(sellerStats.map(seller => [seller.id, seller]));
+
+    // преобразовали продукты в обьекты с индексами
+    const productIndex = Object.fromEntries(data.products.map(product => [product.sku, product]));
 
     // @TODO: Расчет выручки и прибыли для каждого продавца
-
-    // @TODO: Сортировка продавцов по прибыли
-
-    // @TODO: Назначение премий на основе ранжирования
-
-    // @TODO: Подготовка итоговой коллекции с нужными полями
-}
-
-// собрали продавцов в коллекции
-const sellerStats = data.sellers.map(seller => ({
-  
-        id: seller.id,
-        name: `${seller.first_name} ${seller.last_name}`,
-        revenue: 0,
-        profit: 0,
-        sales_count: 0,
-    products_sold: {}
-}));
-
-console.log(sellerStats);
-
-// преобразовали продавцов в обьекты с индексами
-const sellerIndex = Object.fromEntries(sellerStats.map(seller => [seller.id, seller]));
-
-// преобразовали продукты в обьекты с индексами
-const productIndex = Object.fromEntries(data.products.map(product => [product.sku, product]));
-
-data.purchase_records.forEach(record => {
+    data.purchase_records.forEach(record => {
     const seller = sellerIndex[record.seller_id];
     if (seller) {
         seller.sales_count += 1; // счетчик количесва продаж
@@ -106,11 +105,33 @@ data.purchase_records.forEach(record => {
             seller.products_sold[item.sku] = 0;
         }
 
-        seller.products_sold[item.sku] += 1;
-    })
-
-    
+        seller.products_sold[item.sku] += 1;//увеличиваем счетчик проданных товаров 
+    }) 
 })
+
+    // @TODO: Сортировка продавцов по прибыли
+    sellerStats.sort((a, b) => a.profit - b.profit);
+
+    // @TODO: Назначение премий на основе ранжирования
+    sellerStats.forEach((seller, index) => {
+        seller.bonus = calculateBonusByProfit(index, sellerStats.length, seller) // Считаем бонус
+        seller.top_products = Object.entries(seller.products_sold)
+        .map(([sku, quantity]) => ([{sku, quantity}]))
+        .sort((a, b) => (b.quantity - a.quantity))
+        .slice(0, 10); // Формируем топ-10 товаров
+});
+
+    // @TODO: Подготовка итоговой коллекции с нужными полями
+}
+
+// собрали продавцов в коллекции
+
+
+
+
+
+
+
 
 
 
