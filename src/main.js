@@ -110,7 +110,7 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
 })
 
     // @TODO: Сортировка продавцов по прибыли
-    sellerStats.sort((a, b) => a.profit - b.profit);
+    sellerStats.sort((a, b) => b.profit - a.profit);
 
     // @TODO: Назначение премий на основе ранжирования
     sellerStats.forEach((seller, index) => {
@@ -122,6 +122,15 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
 });
 
     // @TODO: Подготовка итоговой коллекции с нужными полями
+    return sellerStats.map(seller => ({
+        seller_id: seller.id, // Строка, идентификатор продавца
+        name: seller.name, // Строка, имя продавца
+        revenue: +seller.revenue.toFixed(2),// Число с двумя знаками после точки, выручка продавца
+        profit: +seller.profit.toFixed(2),// Число с двумя знаками после точки, прибыль продавца
+        sales_count: seller.sales_count,// Целое число, количество продаж продавца
+        top_products: seller.top_products,// Массив объектов вида: { "sku": "SKU_008","quantity": 10}, топ-10 товаров продавца
+        bonus: +seller.bonus.toFixed(2)// Число с двумя знаками после точки, бонус продавца
+}));
 }
 
 // собрали продавцов в коллекции
