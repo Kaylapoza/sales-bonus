@@ -104,7 +104,7 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
             seller.products_sold[item.sku] = 0;
         }
 
-        seller.products_sold[item.sku] += 1;//увеличиваем счетчик проданных товаров 
+        seller.products_sold[item.sku] += item.quantity;//увеличиваем счетчик проданных товаров 
     }) 
 })
 
