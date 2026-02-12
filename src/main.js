@@ -21,7 +21,7 @@ function calculateSimpleRevenue(purchase, _product) {
 function calculateBonusByProfit(index, total, seller) {
     // @TODO: Расчет бонуса от позиции в рейтинге
     const {profit} = seller;
-    total = Array.length;
+    total = total.length;
     if (index === 0) {
         return profit * 0.15;
     }
@@ -29,7 +29,7 @@ function calculateBonusByProfit(index, total, seller) {
         return profit * 0.1;
     }
     if (index === total - 1) {
-        return 0;
+        return 0;   
     } else {
         return profit * 0.05;
     }
@@ -114,7 +114,7 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
 
     // @TODO: Назначение премий на основе ранжирования
     sellerStats.forEach((seller, index) => {
-        seller.bonus = calculateBonusByProfit(index, sellerStats.length, seller) // Считаем бонус
+        seller.bonus = calculateBonusByProfit(index, sellerStats, seller) // Считаем бонус
         seller.top_products = Object.entries(seller.products_sold)
         .map(([sku, quantity]) => ([{sku, quantity}]))
         .sort((a, b) => (b.quantity - a.quantity))
@@ -133,7 +133,7 @@ data.sellers.length === 0, data.products.length === 0, data.purchase_records.len
 }));
 }
 
-// собрали продавцов в коллекции
+
 
 
 
